@@ -1,0 +1,85 @@
+---* Social media *---
+ 
+
+------   Functionally Request  ------
+User:
+- Login with username and password
+- Login with google and ...
+- Register account and  Authenticate by email
+- Hashing password with Bcrypt 
+- View personal infomation
+- Update infomation
+- Change password 
+Posts: 
+- User write and post an article
+- Users follow another user
+- User can like and comment on posts friends  
+Chat: 
+- The user sends message/image/file to friends
+- The user calls video with  friends
+- Add the group chat
+
+
+----- Tech  ----- 
+Back-End:
+	NodeJS
+	ExpressJS
+	JWT: authenticate 
+	Nodemailer
+	Restful API
+	MongoDB
+
+
+
+
+Architecture:  services
+
+
+
+----- Database ------
+Account:
+	id: 
+	username:
+	password:
+	email:
+	friends: Array
+	avatar: 
+	cover image:
+	
+Posts:
+	id
+	userId:
+	title:
+	description:
+	image:
+	likes: [
+		userId:
+	]
+	comments: [
+		commentId	
+	]
+Comment:
+	id:
+	userId:
+	postsId:
+	Content:
+	
+Chat 
+	id
+	chatName:
+	isGroupChat:
+	users: [
+		userId
+	]
+	latestMessage: messageId
+
+
+Message:
+	id: 
+	sender:
+	receiver:
+	content:
+	chatId :
+	
+	
+	
