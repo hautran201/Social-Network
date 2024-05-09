@@ -29,7 +29,10 @@ Back-End:
 	Restful API
 	MongoDB
 
-
+	Package: 
+	+ morgan - folow request client
+	+ helmet - security header
+	+ compression - optimate response
 
 
 Architecture:  services
@@ -44,14 +47,14 @@ Account:
 	email:
 	friends: Array
 	avatar: 
-	cover image:
+	coverImage:
 	
 Posts:
 	id
 	userId:
 	title:
 	description:
-	image:
+	images:[]
 	likes: [
 		userId:
 	]
