@@ -4,12 +4,8 @@ const AccessService = require('../services/access.service');
 
 class AccessController {
     singUp = async (req, res, next) => {
-        try {
-            console.log('***::P::signup::', req.body);
-            return res.status(201).json(await AccessService.signUp(req.body));
-        } catch (error) {
-            next(error);
-        }
+        console.log('***::P::signup::', req.body);
+        return res.status(201).json(await AccessService.signUp(req.body));
     };
 }
 
