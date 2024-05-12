@@ -1,6 +1,6 @@
 'use strict';
 
-const RoleAccount = {
+const ROLE_ACCOUNT = {
     ADMIN: 'ADMIN',
     USER: 'USER',
     SUPPORT: 'SUPPORT',
@@ -12,6 +12,6 @@ const HEADER = {
 };
 
 module.exports = {
-    RoleAccount,
+    ROLE_ACCOUNT,
     HEADER,
 };

@@ -1,6 +1,8 @@
 const app = require('./src/app');
-const { PORT } = require('./src/config');
+const {
+    app: { port },
+} = require('./src/config/config.mongodb');
 
-const server = app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+const server = app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });

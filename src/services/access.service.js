@@ -3,7 +3,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const accountModel = require('../models/account.model');
-const { RoleAccount } = require('../constant');
+const { ROLE_ACCOUNT } = require('../constant');
 const KeyTokenService = require('./keyToken.service');
 const { createTokenPair } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
@@ -26,7 +26,7 @@ class AccessService {
             name,
             email,
             password: passwordHash,
-            roles: [RoleAccount.USER],
+            roles: [ROLE_ACCOUNT.USER],
         });
 
         if (newAccount) {
@@ -54,14 +54,11 @@ class AccessService {
             );
             console.log('Created Token Success::', tokens);
             return {
-                code: 201,
-                metadata: {
-                    account: getInfoData({
-                        fileds: ['_id', 'name', 'email'],
-                        object: newAccount,
-                    }),
-                    tokens,
-                },
+                account: getInfoData({
+                    fileds: ['_id', 'name', 'email'],
+                    object: newAccount,
+                }),
+                tokens,
             };
         }
         return {
@@ -76,7 +73,7 @@ class AccessService {
             throw new BadRequestError('Account not registered!');
         }
         const isMatch = await bcrypt.compare(password, foundAccount.password);
-        if (isMatch) {
+        if (!isMatch) {
             throw new AuthenticateError('Authentication failed');
         }
 
@@ -84,13 +81,18 @@ class AccessService {
         const privateKey = crypto.randomBytes(64).toString('hex');
 
         const { _id: userId } = foundAccount;
-        const tokens = await createTokenPair({
-            _id: userId,
+
+        const tokens = await createTokenPair(
+            {
+                _id: userId,
+                email: foundAccount.email,
+            },
             publicKey,
             privateKey,
-        });
+        );
+        console.log(tokens);
 
-        const keyStore = await KeyTokenService.createKeyToken({
+        await KeyTokenService.createKeyToken({
             userId,
             publicKey,
             privateKey,
@@ -98,10 +100,10 @@ class AccessService {
         });
 
         return {
-            account: getInfoData(
-                (fileds = ['name', 'email', 'password']),
-                (object = foundAccount),
-            ),
+            account: getInfoData({
+                fileds: ['_id', 'name', 'email'],
+                object: foundAccount,
+            }),
             tokens,
         };
     };
