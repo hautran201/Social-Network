@@ -84,7 +84,7 @@ class AccessService {
 
         const tokens = await createTokenPair(
             {
-                _id: userId,
+                userId: userId,
                 email: foundAccount.email,
             },
             publicKey,
@@ -106,6 +106,12 @@ class AccessService {
             }),
             tokens,
         };
+    };
+
+    static logout = async (keyStore) => {
+        const delKey = await KeyTokenService.removeTokenById(keyStore._id);
+        console.log(delKey);
+        return delKey;
     };
 }
 
