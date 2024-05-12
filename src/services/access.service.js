@@ -7,7 +7,11 @@ const { RoleAccount } = require('../constant');
 const KeyTokenService = require('./keyToken.service');
 const { createTokenPair } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
-const { BadRequestError } = require('../core/error.response');
+const {
+    BadRequestError,
+    AuthenticateError,
+} = require('../core/error.response');
+const { findByEmail } = require('./account.service');
 
 class AccessService {
     static signUp = async ({ name, email, password }) => {
@@ -63,6 +67,42 @@ class AccessService {
         return {
             code: 200,
             metadata: null,
+        };
+    };
+
+    static login = async ({ email, password }) => {
+        const foundAccount = await findByEmail({ email });
+        if (!foundAccount) {
+            throw new BadRequestError('Account not registered!');
+        }
+        const isMatch = await bcrypt.compare(password, foundAccount.password);
+        if (isMatch) {
+            throw new AuthenticateError('Authentication failed');
+        }
+
+        const publicKey = crypto.randomBytes(64).toString('hex');
+        const privateKey = crypto.randomBytes(64).toString('hex');
+
+        const { _id: userId } = foundAccount;
+        const tokens = await createTokenPair({
+            _id: userId,
+            publicKey,
+            privateKey,
+        });
+
+        const keyStore = await KeyTokenService.createKeyToken({
+            userId,
+            publicKey,
+            privateKey,
+            refreshToken: tokens.refreshToken,
+        });
+
+        return {
+            account: getInfoData(
+                (fileds = ['name', 'email', 'password']),
+                (object = foundAccount),
+            ),
+            tokens,
         };
     };
 }
