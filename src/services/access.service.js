@@ -3,13 +3,15 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const accountModel = require('../models/account.model');
-const { ROLE_ACCOUNT } = require('../constant');
+const { ROLE_ACCOUNT, HEADER } = require('../constant');
 const KeyTokenService = require('./keyToken.service');
-const { createTokenPair } = require('../auth/authUtils');
+const { createTokenPair, verifyJWT } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
 const {
     BadRequestError,
-    AuthenticateError,
+    NotFoundError,
+    AuthFailureError,
+    ForbiddenError,
 } = require('../core/error.response');
 const { findByEmail } = require('./account.service');
 
@@ -112,6 +114,47 @@ class AccessService {
         const delKey = await KeyTokenService.removeTokenById(keyStore._id);
         console.log(delKey);
         return delKey;
+    };
+
+    static handlerRefreshToken = async ({ refreshToken, user, keyStore }) => {
+        const { userId, email } = user;
+
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+            await KeyTokenService.deleteKeyByUserId(userId);
+
+            throw new ForbiddenError(
+                'Something wrong happened! Please relogin.',
+            );
+        }
+
+        if (keyStore.refreshToken !== refreshToken) {
+            throw new AuthFailureError('Account not registered!');
+        }
+
+        const foundAccount = await findByEmail({ email });
+        if (!foundAccount) {
+            throw new AuthFailureError('Account not registered! 2');
+        }
+
+        const tokens = await createTokenPair(
+            { userId, email },
+            keyStore.publicKey,
+            keyStore.privateKey,
+        );
+
+        await keyStore.updateOne({
+            $set: {
+                refreshToken: tokens.refreshToken,
+            },
+            $addToSet: {
+                refreshTokensUsed: refreshToken,
+            },
+        });
+
+        return {
+            user,
+            tokens,
+        };
     };
 }
 
