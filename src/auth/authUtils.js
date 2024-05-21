@@ -70,10 +70,11 @@ const authentication = asyncHandler(async (req, res, next) => {
     if (!accessToken) throw new NotFoundError('Not found access token');
 
     try {
-        const decoded = JWT.verify(accessToken, keyStore.publicKey);
-        if (userId !== decoded.userId)
+        const decodedUser = JWT.verify(accessToken, keyStore.publicKey);
+        if (userId !== decodedUser.userId)
             throw new AuthFailureError('Invalid userId');
         req.keyStore = keyStore;
+        req.user = decodedUser;
         return next();
     } catch (error) {
         console.log(error);

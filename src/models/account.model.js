@@ -21,8 +21,14 @@ const acountSchema = new Schema(
             type: String,
             required: true,
         },
-        friends: {
+        followers: {
             type: [Schema.Types.ObjectId],
+            ref: 'Account',
+            default: [],
+        },
+        following: {
+            type: [Schema.Types.ObjectId],
+            ref: 'Account',
             default: [],
         },
         avatar: {

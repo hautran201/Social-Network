@@ -92,7 +92,6 @@ class AccessService {
             publicKey,
             privateKey,
         );
-        console.log(tokens);
 
         await KeyTokenService.createKeyToken({
             userId,

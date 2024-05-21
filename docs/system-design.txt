@@ -10,9 +10,10 @@ User:
 - View personal infomation
 - Update infomation
 - Change password 
+- Users follow another user
+
 Posts: 
 - User write and post an article
-- Users follow another user
 - User can like and comment on posts friends  
 Chat: 
 - The user sends message/image/file to friends
@@ -55,15 +56,15 @@ Account:
 		type: String,
 		required: true,
 	},
-	friends: {
+	followers: {
+		type: [Schema.Types.ObjectId],
+		default: [],
+	},
+	following:{
 		type: [Schema.Types.ObjectId],
 		default: [],
 	},
 	avatar: {
-		type: String,
-		default: '',
-	},
-	coverImage: {
 		type: String,
 		default: '',
 	},
@@ -82,22 +83,47 @@ Account:
 	},
 	
 Posts:
-	id
-	userId:
-	title:
-	description:
-	images:[]
-	likes: [
-		userId:
-	]
-	comments: [
-		commentId	
-	]
+	created_by: {
+            type: Schema.Types.ObjectId,
+            ref: 'Account',
+    },
+	description: {
+		type: String,
+		required: true,
+	},
+	like: {
+		type: [Schema.Types.ObjectId],
+		ref: 'Account',
+		default: [],
+	},
+	comments: {
+		type: Schema.Types.ObjectId,
+		ref: 'Comment',
+		default: [],
+    },
 Comment:
-	id:
-	userId:
-	postsId:
-	Content:
+	created_by: {
+		type: Schema.Types.ObjectId,
+		ref: 'Account',
+    },
+	posts_id: {
+		type: Schema.Types.ObjectId,
+		ref: 'Posts',
+	},
+	content: {
+		type: String,
+		required: true,
+	},
+	like: {
+		type: [Schema.Types.ObjectId],
+		ref: 'Account',
+		default: [],
+	},
+	comments: {
+		type: Schema.Types.ObjectId,
+		ref: 'Comment',
+		default: [],
+    },
 	
 Chat 
 	id
